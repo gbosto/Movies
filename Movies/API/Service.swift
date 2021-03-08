@@ -21,7 +21,7 @@ class Service {
         if pagination {
             isPaginating = true
         }
-        DispatchQueue.global().asyncAfter(deadline: .now() + (pagination ? 0 : 0)) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + (pagination ? 1 : 0)) {
         
         guard let url = URL(string: url) else {return}
         

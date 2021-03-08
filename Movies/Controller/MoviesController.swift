@@ -58,9 +58,10 @@ class MoviesController: UITableViewController {
     private func fetchMovies() {
         page += 1
         let url = "https://api.themoviedb.org/3/tv/popular?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&page=\(page)"
-        startLoading()
         service.fetchData(forUrl: url, decodingType: MovieItem.self, pagination: true) { result in
-            self.stopLoading()
+            DispatchQueue.main.async {
+                self.tableView.tableFooterView = nil
+            }
             switch result {
             case .success(let movieItem):
                 DispatchQueue.main.async { [weak self] in
@@ -72,7 +73,9 @@ class MoviesController: UITableViewController {
                 }
             case .failure(let error):
                 self.fetchMovies()
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    self.showMessage(withTitle: "Error", message: error.localizedDescription, dissmissalText: "Ok")
+                }
             }
         }
     }
@@ -106,6 +109,16 @@ class MoviesController: UITableViewController {
     private func presentDetailsController() {
         guard let movie = self.searchedMovie else { return }
         delegate?.presentMovieDetailsController(movie: movie)
+    }
+    
+    private func createFooter() -> UIView {
+        let footer = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 100))
+        let spinner = UIActivityIndicatorView()
+        spinner.center = footer.center
+        footer.addSubview(spinner)
+        spinner.startAnimating()
+        
+        return footer
     }
     
     //MARK: - Actions
@@ -161,6 +174,7 @@ extension MoviesController {
         let position = scrollView.contentOffset.y
         if position > (tableView.contentSize.height - 50 - scrollView.frame.size.height) {
             guard !service.isPaginating else {return}
+            self.tableView.tableFooterView = createFooter()
             fetchMovies()
         }
     }

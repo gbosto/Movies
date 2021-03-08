@@ -16,6 +16,7 @@ class MoviesCell: UITableViewCell {
             setImage()
         }
     }
+    
     var movie: Movie? {
         didSet { configureCell()}
     }
