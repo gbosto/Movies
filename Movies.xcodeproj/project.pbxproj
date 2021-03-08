@@ -120,10 +120,10 @@
 		CEC3400E25F339CE0076F73D /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				CEC3403225F3625D0076F73D /* ContainerController.swift */,
 				CEC3401425F33A130076F73D /* MoviesController.swift */,
 				CEC3401825F33A1D0076F73D /* MovieDetailsController.swift */,
 				CEC3402725F34C6D0076F73D /* SearchController.swift */,
-				CEC3403225F3625D0076F73D /* ContainerController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";

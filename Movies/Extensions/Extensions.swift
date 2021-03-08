@@ -28,7 +28,7 @@ extension UIViewController {
         view.endEditing(true)
     }
     
-    func startLoading(){
+    func showLoader(){
         loader = UIView(frame: self.view.bounds)
         self.view.addSubview(loader!)
         
@@ -40,7 +40,7 @@ extension UIViewController {
         }
     }
     
-    func stopLoading(){
+    func removeLoader(){
         DispatchQueue.main.async {
             loader?.removeFromSuperview()
         }

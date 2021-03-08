@@ -19,14 +19,18 @@ class ContainerController: UISplitViewController, UISplitViewControllerDelegate 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureUi()
+    }
+    
+    //MARK: - Helpers
+    
+    private func configureUi() {
         moviesController.delegate = self
         self.viewControllers = [masterNav, detailsNav]
         self.preferredDisplayMode = .oneBesideSecondary
     }
     
-    //MARK: - Helpers
-    
-    func presentDetailsViewController(movie: Movie) {
+    private func presentDetailsViewController(withMovie movie: Movie) {
         detailsNav.popToRootViewController(animated: true)
         let controller = MovieDetailsController()
         controller.movie = movie
@@ -38,11 +42,11 @@ class ContainerController: UISplitViewController, UISplitViewControllerDelegate 
 //MARK: - MoviesControllerDelegate
 
 extension ContainerController: MoviesControllerDelegate {
-    func presentMovieDetailsController(movie: Movie) {
-        presentDetailsViewController(movie: movie)
+    func didTapAt(movie: Movie) {
+        presentDetailsViewController(withMovie: movie)
     }
     
-    func didTapAtItem(movie: Movie) {
-        presentDetailsViewController(movie: movie)
+    func presentMovieDetailsController(withMovie movie: Movie) {
+        presentDetailsViewController(withMovie: movie)
     }
 }

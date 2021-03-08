@@ -60,6 +60,5 @@ class SuggestionsCell: UICollectionViewCell {
         guard let movie = self.movie else {return}
         posterImageView.image = movie.image
         titleLabel.text = movie.title
-        
     }
 }

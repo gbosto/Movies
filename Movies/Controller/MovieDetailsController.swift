@@ -29,12 +29,12 @@ class MovieDetailsController: UIViewController {
     
     //MARK: - Api
     
-    private func fetchSimilarShows() {
+    private func fetchSimilarMovies() {
         guard let movie = self.movie else {return}
         let url = Consts.baseUrl + String(movie.id) + Consts.urlCompl
-        startLoading()
+        showLoader()
         service.fetchData(forUrl: url, decodingType: MovieItem.self) { result in
-            self.stopLoading()
+            self.removeLoader()
             switch result {
             case .success(let movieItem):
                 
@@ -66,7 +66,7 @@ class MovieDetailsController: UIViewController {
                 if isForMainPoster {
                     DispatchQueue.main.async {[weak self] in
                         guard let self = self else {return}
-                        self.tableView.mainPosterImage = image
+                        self.tableView.poster = image
                     }
                 } else {
                     DispatchQueue.main.async {[weak self] in
@@ -89,8 +89,8 @@ class MovieDetailsController: UIViewController {
     
     private func updateView() {
         if movie != nil {
-            configureUI(withMovie: movie!)
-            fetchSimilarShows()
+            configureUI()
+            fetchSimilarMovies()
             guard let path = movie?.posterUrl else {return}
             fetchImageData(path: path, isForMainPoster: true)
         } else {
@@ -98,7 +98,7 @@ class MovieDetailsController: UIViewController {
         }
     }
 
-    private func configureUI(withMovie movie: Movie) {
+    private func configureUI() {
         view.addSubview(tableView)
         tableView.fillSuperview()
         tableView.movie = movie

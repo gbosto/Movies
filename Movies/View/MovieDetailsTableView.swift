@@ -19,15 +19,15 @@ class MovieDetailsTableView: UIView {
     //MARK: - Properties
     
      var similarMovies = [SimilarMovie](){
-        didSet {tableView.reloadData() }
+        didSet {reloadTableView()}
     }
     
-     var mainPosterImage: UIImage? {
-        didSet {tableView.reloadData()}
+     var poster: UIImage? {
+        didSet {reloadTableView()}
     }
     
      var movie: Movie? {
-        didSet {tableView.reloadData()}
+        didSet {reloadTableView()}
     }
     
     private lazy var tableView: UITableView = {
@@ -65,6 +65,13 @@ class MovieDetailsTableView: UIView {
         tableView.register(SimilarMoviesCell.self, forCellReuseIdentifier: Consts.SimilarMoviesCellId)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Consts.cellId)
     }
+    
+    private func reloadTableView() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {return}
+            self.tableView.reloadData()
+        }
+    }
 }
 
 //MARK: - TableViewDataSource
@@ -79,7 +86,7 @@ extension MovieDetailsTableView: UITableViewDataSource {
        case 0:
            let cell = tableView.dequeueReusableCell(withIdentifier: Consts.posterCellId, for: indexPath) as! PosterCell
            cell.movie = self.movie
-           cell.posterImage = mainPosterImage
+           cell.posterImage = poster
            return cell
        case 1:
            let cell = tableView.dequeueReusableCell(withIdentifier: Consts.descriptionCellId, for: indexPath) as! DescriptionCell

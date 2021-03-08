@@ -12,9 +12,7 @@ class PosterCell: UITableViewCell {
     //MARK: - Properties
     
     var movie: Movie? {
-        didSet {
-            configure()
-        }
+        didSet {configure()}
     }
     
     var posterImage: UIImage? {

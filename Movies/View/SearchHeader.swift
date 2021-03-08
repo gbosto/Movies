@@ -69,5 +69,4 @@ class SearchHeader: UIView {
         guard let text = searchTextField.text else {return}
         delegate.header(_header: self, wantsToSearchWithText: text)
     }
-
 }

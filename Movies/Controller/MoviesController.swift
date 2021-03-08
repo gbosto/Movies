@@ -7,15 +7,15 @@
 
 import UIKit
 
+protocol MoviesControllerDelegate: class {
+    func didTapAt(movie: Movie)
+    func presentMovieDetailsController(withMovie movie: Movie)
+}
+
 private struct Consts {
     static let cellId: String = "MoviesCell"
     static let rowHeight: CGFloat = 140
     static let baseUrl: String = "https://api.themoviedb.org/3/tv/popular?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&page="
-}
-
-protocol MoviesControllerDelegate: class {
-    func didTapAtItem(movie: Movie)
-    func presentMovieDetailsController(movie: Movie)
 }
 
 class MoviesController: UITableViewController {
@@ -27,7 +27,7 @@ class MoviesController: UITableViewController {
     private let isInSplitMode: Bool
     private var page = 0
     private var searchedMovie: Movie? {
-        didSet {presentDetailsController()}
+        didSet {presentMovieDetailsController()}
     }
     private var movies = [Movie]() {
         didSet {tableView.reloadData()}
@@ -74,8 +74,7 @@ class MoviesController: UITableViewController {
         }
     }
     
-    
-    private func fetchImageData(path: String, cell: UITableViewCell) {
+    private func fetchImageData(_ path: String, forCell cell: UITableViewCell) {
         service.fetchData(posterPath: path) { result in
             switch result {
             case .success(let data):
@@ -92,7 +91,7 @@ class MoviesController: UITableViewController {
 
     private func configureUI() {
         let searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"),
-                                           style: .plain, target: self, action: #selector(searchButtonDidTap))
+                                           style: .plain, target: self, action: #selector(searchButtonTapped))
         navigationItem.rightBarButtonItem = searchButton
         
         
@@ -101,9 +100,9 @@ class MoviesController: UITableViewController {
         tableView.separatorStyle = .none
     }
     
-    private func presentDetailsController() {
+    private func presentMovieDetailsController() {
         guard let movie = self.searchedMovie else { return }
-        delegate?.presentMovieDetailsController(movie: movie)
+        delegate?.presentMovieDetailsController(withMovie: movie)
     }
     
     private func createFooter() -> UIView {
@@ -116,9 +115,9 @@ class MoviesController: UITableViewController {
         return footer
     }
     
-    private func fetchImages(cell: UITableViewCell, posterUrl: String?) {
+    private func fetchImages(forCell cell: UITableViewCell, _ posterUrl: String?) {
         guard let posterUrl = posterUrl else {return}
-        fetchImageData(path: posterUrl, cell: cell)
+        fetchImageData(posterUrl, forCell: cell)
     }
     
     private func clearMoviesArray() {
@@ -129,7 +128,7 @@ class MoviesController: UITableViewController {
     
     //MARK: - Actions
     
-    @objc private func searchButtonDidTap() {
+    @objc private func searchButtonTapped() {
         let controller = SearchController()
         controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
@@ -148,7 +147,7 @@ extension MoviesController {
         let cell = tableView.dequeueReusableCell(withIdentifier: Consts.cellId, for: indexPath) as! MoviesCell
         let movie = movies[indexPath.row]
         cell.movie = movie
-        fetchImages(cell: cell, posterUrl: movie.posterUrl)
+        fetchImages(forCell: cell, movie.posterUrl)
         return cell
     }
 }
@@ -161,7 +160,7 @@ extension MoviesController {
         let movie = movies[indexPath.row]
         if isInSplitMode {
             guard let delegate = delegate else {return}
-            delegate.didTapAtItem(movie: movie)
+            delegate.didTapAt(movie: movie)
         } else {
             let controller = MovieDetailsController()
             controller.movie = movie

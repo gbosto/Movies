@@ -12,13 +12,11 @@ class MoviesCell: UITableViewCell {
     //MARK: - Properties
 
     var imageData: Data? {
-        didSet {
-            setImage()
-        }
+        didSet {setImage()}
     }
     
     var movie: Movie? {
-        didSet { configureCell()}
+        didSet {configureCell()}
     }
 
     
@@ -63,10 +61,7 @@ class MoviesCell: UITableViewCell {
         
         return label
     }()
-    
-    
-    
-    
+     
     //MARK: - Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

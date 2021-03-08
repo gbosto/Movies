@@ -42,9 +42,9 @@ class SearchController: UITableViewController {
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         let url = Consts.baseUrl + title + Consts.urlCompl
-        startLoading()
+        showLoader()
         service.fetchData(forUrl: url, decodingType: SearchedMovieItem.self) { result in
-            self.stopLoading()
+            self.removeLoader()
             switch result {
             case .success(let movieItem):
                 DispatchQueue.main.async {[weak self] in
@@ -64,7 +64,7 @@ class SearchController: UITableViewController {
         }
     }
     
-    private func fetchImageData(path: String, cell: UITableViewCell) {
+    private func fetchImageData(_ path: String, forCell cell: UITableViewCell) {
         
         service.fetchData(posterPath: path) { result in 
             switch result {
@@ -129,7 +129,7 @@ extension SearchController {
         let cell = tableView.dequeueReusableCell(withIdentifier: Consts.cellId, for: indexPath) as! MoviesCell
         let movie = movies[indexPath.row]
         if movie.posterUrl != nil {
-        fetchImageData(path: movie.posterUrl!, cell: cell)
+            fetchImageData(movie.posterUrl!, forCell: cell)
         }
         cell.movie = movie
 
