@@ -72,7 +72,6 @@ class MoviesController: UITableViewController {
                     self.movies.append(contentsOf: movieItem.results)
                 }
             case .failure(let error):
-                self.fetchMovies()
                 DispatchQueue.main.async {
                     self.showMessage(withTitle: "Error", message: error.localizedDescription, dissmissalText: "Ok")
                 }
