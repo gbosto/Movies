@@ -8,8 +8,10 @@
 import UIKit
 
 private struct Consts {
-    static let cellId   : String = "SearchCell"
+    static let cellId: String = "SearchCell"
     static let rowHeight : CGFloat = 140
+    static let baseUrl: String = "https://api.themoviedb.org/3/search/movie?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&query="
+    static let urlCompl: String = "&page=1&include_adult=true"
 }
 
 protocol SearchControllerDelegate: class {
@@ -39,8 +41,7 @@ class SearchController: UITableViewController {
         let title = query.replacingOccurrences(of: " ", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
-
-        let url = "https://api.themoviedb.org/3/search/movie?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&query=\(title)&page=1&include_adult=true"
+        let url = Consts.baseUrl + title + Consts.urlCompl
         startLoading()
         service.fetchData(forUrl: url, decodingType: SearchedMovieItem.self) { result in
             self.stopLoading()
@@ -55,7 +56,8 @@ class SearchController: UITableViewController {
                     }
                 }
             case .failure(let error):
-                DispatchQueue.main.async {
+                DispatchQueue.main.async {[weak self] in
+                    guard let self = self else {return}
                     self.showMessage(withTitle: "Error", message: error.localizedDescription, dissmissalText: "OK")
                 }
             }
@@ -64,14 +66,14 @@ class SearchController: UITableViewController {
     
     private func fetchImageData(path: String, cell: UITableViewCell) {
         
-        service.fetchData(posterPath: path) { result in
+        service.fetchData(posterPath: path) { result in 
             switch result {
             case .success(let data):
                 DispatchQueue.main.async {
                     (cell as! MoviesCell).imageData = data
                 }
             case .failure(let error):
-                print(error)
+                print(error.localizedDescription)
             }
         }
     }

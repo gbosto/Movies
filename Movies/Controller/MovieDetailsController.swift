@@ -7,6 +7,11 @@
 
 import UIKit
 
+private struct Consts {
+    static let baseUrl: String = "https://api.themoviedb.org/3/tv/"
+    static let urlCompl: String = "/similar?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&page=1"
+}
+
 class MovieDetailsController: UIViewController {
     //MARK: - Properties
     
@@ -15,11 +20,7 @@ class MovieDetailsController: UIViewController {
     var movie: Movie?
 
     //MARK: - Lifecycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         updateView()
@@ -30,7 +31,7 @@ class MovieDetailsController: UIViewController {
     
     private func fetchSimilarShows() {
         guard let movie = self.movie else {return}
-        let url = "https://api.themoviedb.org/3/tv/\(movie.id)/similar?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&page=1"
+        let url = Consts.baseUrl + String(movie.id) + Consts.urlCompl
         startLoading()
         service.fetchData(forUrl: url, decodingType: MovieItem.self) { result in
             self.stopLoading()
@@ -45,11 +46,11 @@ class MovieDetailsController: UIViewController {
                     movieItem.results.forEach {
                         guard let url = $0.posterUrl else {return}
                         self.fetchImageData(path: url, title: $0.title, isForMainPoster: false)
-                        
                     }
                 }
             case .failure(let error):
-                DispatchQueue.main.async {
+                DispatchQueue.main.async {[weak self] in
+                    guard let self = self else {return}
                     self.showMessage(withTitle: "Error", message: "No Results Found For Similar Shows, \(error.localizedDescription)", dissmissalText: "OK")
                 }
             }
@@ -76,7 +77,10 @@ class MovieDetailsController: UIViewController {
                 }
                 
             case .failure(let error):
-                print(error)
+                DispatchQueue.main.async {[weak self] in
+                    guard let self = self else {return}
+                    self.showMessage(withTitle: "Error", message: error.localizedDescription, dissmissalText: "Ok")
+                }
             }
         }
     }

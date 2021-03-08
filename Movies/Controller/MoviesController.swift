@@ -8,8 +8,9 @@
 import UIKit
 
 private struct Consts {
-    static let cellId   : String = "MoviesCell"
-    static let rowHeight : CGFloat = 140
+    static let cellId: String = "MoviesCell"
+    static let rowHeight: CGFloat = 140
+    static let baseUrl: String = "https://api.themoviedb.org/3/tv/popular?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&page="
 }
 
 protocol MoviesControllerDelegate: class {
@@ -22,17 +23,12 @@ class MoviesController: UITableViewController {
     //MARK: - Properties
     
     weak var delegate: MoviesControllerDelegate?
-    private var searchedMovie: Movie? {
-        didSet {
-            presentDetailsController()
-        }
-    }
-    
     private let service = Service.shared
     private let isInSplitMode: Bool
     private var page = 0
-    
-    
+    private var searchedMovie: Movie? {
+        didSet {presentDetailsController()}
+    }
     private var movies = [Movie]() {
         didSet {tableView.reloadData()}
     }
@@ -57,7 +53,7 @@ class MoviesController: UITableViewController {
     
     private func fetchMovies() {
         page += 1
-        let url = "https://api.themoviedb.org/3/tv/popular?api_key=b4b80be561969a8cfe50a0a795412960&language=en-US&page=\(page)"
+        let url = Consts.baseUrl + String(page)
         service.fetchData(forUrl: url, decodingType: MovieItem.self, pagination: true) { result in
             DispatchQueue.main.async {
                 self.tableView.tableFooterView = nil
@@ -66,13 +62,12 @@ class MoviesController: UITableViewController {
             case .success(let movieItem):
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else {return}
-                    if self.movies.count > 200 {
-                        self.movies.removeAll()
-                    }
+                    self.clearMoviesArray()
                     self.movies.append(contentsOf: movieItem.results)
                 }
             case .failure(let error):
-                DispatchQueue.main.async {
+                DispatchQueue.main.async {[weak self] in
+                    guard let self = self else {return}
                     self.showMessage(withTitle: "Error", message: error.localizedDescription, dissmissalText: "Ok")
                 }
             }
@@ -88,7 +83,7 @@ class MoviesController: UITableViewController {
                     (cell as! MoviesCell).imageData = data
                 }
             case .failure(let error):
-                print(error)
+                print(error.localizedDescription)
             }
         }
     }
@@ -96,7 +91,8 @@ class MoviesController: UITableViewController {
     //MARK: - helpers
 
     private func configureUI() {
-        let searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(searchButtonDidTap))
+        let searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"),
+                                           style: .plain, target: self, action: #selector(searchButtonDidTap))
         navigationItem.rightBarButtonItem = searchButton
         
         
@@ -120,6 +116,17 @@ class MoviesController: UITableViewController {
         return footer
     }
     
+    private func fetchImages(cell: UITableViewCell, posterUrl: String?) {
+        guard let posterUrl = posterUrl else {return}
+        fetchImageData(path: posterUrl, cell: cell)
+    }
+    
+    private func clearMoviesArray() {
+        if self.movies.count > 200 {
+            self.movies.removeAll()
+        }
+    }
+    
     //MARK: - Actions
     
     @objc private func searchButtonDidTap() {
@@ -141,9 +148,7 @@ extension MoviesController {
         let cell = tableView.dequeueReusableCell(withIdentifier: Consts.cellId, for: indexPath) as! MoviesCell
         let movie = movies[indexPath.row]
         cell.movie = movie
-        if movie.posterUrl != nil {
-        fetchImageData(path: movie.posterUrl!, cell: cell)
-        }
+        fetchImages(cell: cell, posterUrl: movie.posterUrl)
         return cell
     }
 }
