@@ -67,7 +67,6 @@ class PosterCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureUi()
-        isUserInteractionEnabled = false
     }
     
     required init?(coder: NSCoder) {
@@ -77,12 +76,15 @@ class PosterCell: UITableViewCell {
     //MARK: - Helpers
     
     private func configureUi() {
+        isUserInteractionEnabled = false
+
         addSubview(posterImageView)
         posterImageView.anchor(top: topAnchor, left: leftAnchor, paddingTop: 16, paddingLeft: 16)
         
         let stack = configureStack()
         addSubview(stack)
-        stack.anchor(top: safeAreaLayoutGuide.topAnchor, left: posterImageView.rightAnchor, right: rightAnchor, paddingTop: 16, paddingLeft: 12, paddingRight: 8)
+        stack.anchor(top: safeAreaLayoutGuide.topAnchor, left: posterImageView.rightAnchor,
+                     right: rightAnchor, paddingTop: 16, paddingLeft: 12, paddingRight: 8)
         
     }
     

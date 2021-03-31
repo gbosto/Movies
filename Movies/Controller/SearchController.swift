@@ -132,7 +132,6 @@ extension SearchController {
             fetchImageData(movie.posterUrl!, forCell: cell)
         }
         cell.movie = movie
-
         return cell
     }
 }
@@ -157,5 +156,5 @@ func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.fetchSerchResults(query: query)
     }
     return true
-}
+    }
 }

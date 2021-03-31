@@ -44,7 +44,8 @@ class SimilarMoviesCell: UITableViewCell {
     
     private func configureUi() {
         contentView.addSubview(collectionView)
-        collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingLeft: 16, paddingRight: 16)
+        collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor,
+                              right: rightAnchor, paddingLeft: 16, paddingRight: 16)
         collectionView.dataSource = self
         collectionView.delegate = self
         selectionStyle = .none
@@ -59,15 +60,20 @@ class SimilarMoviesCell: UITableViewCell {
 }
 
 extension SimilarMoviesCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 90, height: 160)
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
         return movies.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Consts.suggestionsCellId, for: indexPath) as! SuggestionsCell
         let similarMovie = movies[indexPath.row]
         cell.movie = similarMovie

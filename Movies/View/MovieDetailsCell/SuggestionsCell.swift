@@ -39,7 +39,6 @@ class SuggestionsCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureUI()
-        backgroundColor = .systemBackground
     }
     
     required init?(coder: NSCoder) {
@@ -49,6 +48,7 @@ class SuggestionsCell: UICollectionViewCell {
     //MARK: - Helpers
     
     private func configureUI() {
+        backgroundColor = .systemBackground
         addSubview(posterImageView)
         posterImageView.anchor(top: topAnchor, left: leftAnchor, right: rightAnchor)
         

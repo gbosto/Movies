@@ -19,7 +19,6 @@ class MoviesCell: UITableViewCell {
         didSet {configureCell()}
     }
 
-    
    private let posterImageView: UIImageView = {
         let iv = UIImageView()
         iv.backgroundColor = .lightGray
@@ -46,14 +45,12 @@ class MoviesCell: UITableViewCell {
         return label
     }()
     
-    
     private let languageLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: Constants.font, size: 14)
         
         return label
     }()
-    
     
     private let ratingLabel: UILabel = {
         let label = UILabel()
@@ -82,7 +79,8 @@ class MoviesCell: UITableViewCell {
         
         let stack = configureStack()
         addSubview(stack)
-        stack.anchor(top: topAnchor, left: posterImageView.rightAnchor, right: rightAnchor, paddingTop: 4, paddingLeft: 12, paddingRight: 12)
+        stack.anchor(top: topAnchor, left: posterImageView.rightAnchor, right: rightAnchor,
+                     paddingTop: 4, paddingLeft: 12, paddingRight: 12)
     }
     
     private func configureStack() -> UIStackView {
@@ -96,7 +94,6 @@ class MoviesCell: UITableViewCell {
     
     private func configureCell() {
         guard let movie = self.movie else {return}
-        
         titleLabel.text = movie.title
         ratingLabel.text = "Rating: " + String(movie.rating)
         languageLabel.text = "Language: " + movie.language

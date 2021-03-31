@@ -17,7 +17,7 @@ class SearchHeader: UIView {
     
     weak var delegate: SearchHeaderDelegate?
     
-     let searchTextField: UITextField = {
+    let searchTextField: UITextField = {
         let tf = UITextField()
         let spacer = UIView()
         spacer.setDimensions(height: 50, width: 12)
@@ -25,7 +25,6 @@ class SearchHeader: UIView {
         tf.leftViewMode = .always
         tf.enablesReturnKeyAutomatically = true
         tf.returnKeyType = .search
-        
         tf.borderStyle = .roundedRect
         tf.placeholder = "Search for a Movie"
         
@@ -36,7 +35,8 @@ class SearchHeader: UIView {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
         button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
-       return button
+        
+        return button
     }()
     
     //MARK: - Lyfecycle
@@ -65,8 +65,8 @@ class SearchHeader: UIView {
     //MARK: - Actions
     
     @objc private func didTapButton() {
-        guard let delegate = self.delegate else {return}
-        guard let text = searchTextField.text else {return}
+        guard let delegate = self.delegate,
+        let text = searchTextField.text else {return}
         delegate.header(_header: self, wantsToSearchWithText: text)
     }
 }

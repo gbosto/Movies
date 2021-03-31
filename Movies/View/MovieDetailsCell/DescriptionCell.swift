@@ -36,8 +36,6 @@ class DescriptionCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureUi()
-        selectionStyle = .none
-
     }
     
     required init?(coder: NSCoder) {
@@ -47,6 +45,8 @@ class DescriptionCell: UITableViewCell {
     //MARK: - Helpers
     
     private func configureUi() {
+        selectionStyle = .none
+
         addSubview(descriptionLabel)
         descriptionLabel.anchor(top: topAnchor, left: leftAnchor, paddingTop: 20, paddingLeft: 16)
 

@@ -8,7 +8,7 @@
 import UIKit
 
 private struct Consts {
-    static let cellId: String = "CellId"
+    static let cellId: String = "DefaultCellId"
     static let posterCellId: String = "PosterCell"
     static let descriptionCellId: String = "DescriptionCell"
     static let SimilarMoviesCellId: String = "SimilarCell"
@@ -91,18 +91,14 @@ extension MovieDetailsTableView: UITableViewDataSource {
        case 1:
            let cell = tableView.dequeueReusableCell(withIdentifier: Consts.descriptionCellId, for: indexPath) as! DescriptionCell
            cell.movie = self.movie
-           
            return cell
        case 2:
            let cell = tableView.dequeueReusableCell(withIdentifier: Consts.SimilarMoviesCellId, for: indexPath) as! SimilarMoviesCell
            cell.movies = self.similarMovies
            return cell
        default:
-           print("error")
+           return tableView.dequeueReusableCell(withIdentifier: Consts.cellId, for: indexPath)
        }
-       let cell = tableView.dequeueReusableCell(withIdentifier: Consts.cellId, for: indexPath)
-       
-       return cell
    }
 }
 
@@ -120,9 +116,7 @@ extension MovieDetailsTableView: UITableViewDelegate {
        case 2:
            return 220
        default:
-           print("error")
+           return 0
        }
-        return 100
    }
-    
 }

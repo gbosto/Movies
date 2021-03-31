@@ -11,8 +11,6 @@ class ContainerController: UISplitViewController, UISplitViewControllerDelegate 
     
     //MARK: - Properties
     
-    private let moviesController = MoviesController(isInSplitMode: true)
-    private lazy var masterNav = UINavigationController(rootViewController: moviesController)
     private let detailsNav = UINavigationController(rootViewController: MovieDetailsController())
     
     //MARK: - Lifecycle
@@ -25,28 +23,21 @@ class ContainerController: UISplitViewController, UISplitViewControllerDelegate 
     //MARK: - Helpers
     
     private func configureUi() {
+        let moviesController = MoviesController(isInSplitMode: true)
         moviesController.delegate = self
+        let masterNav = UINavigationController(rootViewController: moviesController)
         self.viewControllers = [masterNav, detailsNav]
         self.preferredDisplayMode = .oneBesideSecondary
-    }
-    
-    private func presentDetailsViewController(withMovie movie: Movie) {
-        detailsNav.popToRootViewController(animated: true)
-        let controller = MovieDetailsController()
-        controller.movie = movie
-        
-        detailsNav.pushViewController(controller, animated: true)
     }
 }
 
 //MARK: - MoviesControllerDelegate
 
 extension ContainerController: MoviesControllerDelegate {
-    func didTapAt(movie: Movie) {
-        presentDetailsViewController(withMovie: movie)
-    }
-    
     func presentMovieDetailsController(withMovie movie: Movie) {
-        presentDetailsViewController(withMovie: movie)
+        detailsNav.popToRootViewController(animated: true)
+        let controller = MovieDetailsController()
+        controller.movie = movie
+        detailsNav.pushViewController(controller, animated: true)
     }
 }

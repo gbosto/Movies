@@ -41,7 +41,9 @@ class MovieDetailsController: UIViewController {
                 DispatchQueue.main.async {[weak self] in
                     guard let self = self else {return}
                     if movieItem.results.count == 0 {
-                        self.showMessage(withTitle: "Error", message: "No Results Found For Similar Shows", dissmissalText: "OK")
+                        self.showMessage(withTitle: "Error",
+                                         message: "No Results Found For Similar Shows",
+                                         dissmissalText: "OK")
                     }
                     movieItem.results.forEach {
                         guard let url = $0.posterUrl else {return}
@@ -51,7 +53,9 @@ class MovieDetailsController: UIViewController {
             case .failure(let error):
                 DispatchQueue.main.async {[weak self] in
                     guard let self = self else {return}
-                    self.showMessage(withTitle: "Error", message: "No Results Found For Similar Shows, \(error.localizedDescription)", dissmissalText: "OK")
+                    self.showMessage(withTitle: "Error",
+                                     message: "No Results Found For Similar Shows, \(error.localizedDescription)",
+                                     dissmissalText: "OK")
                 }
             }
         }
@@ -89,10 +93,10 @@ class MovieDetailsController: UIViewController {
     
     private func updateView() {
         if movie != nil {
-            configureUI()
-            fetchSimilarMovies()
             guard let path = movie?.posterUrl else {return}
             fetchImageData(path: path, isForMainPoster: true)
+            configureUI()
+            fetchSimilarMovies()
         } else {
             view.backgroundColor = .systemBackground
         }
@@ -103,7 +107,6 @@ class MovieDetailsController: UIViewController {
         tableView.fillSuperview()
         tableView.movie = movie
         view.backgroundColor = .white
-
     }
 }
 

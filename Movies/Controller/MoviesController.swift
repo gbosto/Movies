@@ -8,7 +8,6 @@
 import UIKit
 
 protocol MoviesControllerDelegate: class {
-    func didTapAt(movie: Movie)
     func presentMovieDetailsController(withMovie movie: Movie)
 }
 
@@ -26,11 +25,17 @@ class MoviesController: UITableViewController {
     private let service = Service.shared
     private let isInSplitMode: Bool
     private var page = 0
-    private var searchedMovie: Movie? {
-        didSet {presentMovieDetailsController()}
-    }
     private var movies = [Movie]() {
         didSet {tableView.reloadData()}
+    }
+    private var searchedMovie: Movie? {
+        didSet {
+            guard let movie = searchedMovie else {return}
+            delegate?.presentMovieDetailsController(withMovie: movie)
+        }
+    }
+    private var failedToFetchImages: Bool? {
+        didSet{fetchMovies()}
     }
     
     //MARK: - Lifecycle
@@ -55,9 +60,7 @@ class MoviesController: UITableViewController {
         page += 1
         let url = Consts.baseUrl + String(page)
         service.fetchData(forUrl: url, decodingType: MovieItem.self, pagination: true) { result in
-            DispatchQueue.main.async {
-                self.tableView.tableFooterView = nil
-            }
+            self.removeFooter()
             switch result {
             case .success(let movieItem):
                 DispatchQueue.main.async { [weak self] in
@@ -65,10 +68,13 @@ class MoviesController: UITableViewController {
                     self.clearMoviesArray()
                     self.movies.append(contentsOf: movieItem.results)
                 }
-            case .failure(let error):
-                DispatchQueue.main.async {[weak self] in
+            case .failure(_):
+                DispatchQueue.main.async { [weak self] in
                     guard let self = self else {return}
-                    self.showMessage(withTitle: "Error", message: error.localizedDescription, dissmissalText: "Ok")
+                    self.page += 1
+                    self.failedToFetchImages = true
+                    self.tableView.tableFooterView = self.createFooter()
+                    self.failedToFetchImages = nil
                 }
             }
         }
@@ -93,18 +99,11 @@ class MoviesController: UITableViewController {
         let searchButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"),
                                            style: .plain, target: self, action: #selector(searchButtonTapped))
         navigationItem.rightBarButtonItem = searchButton
-        
-        
         tableView.register(MoviesCell.self, forCellReuseIdentifier: Consts.cellId)
         tableView.rowHeight = Consts.rowHeight
         tableView.separatorStyle = .none
     }
-    
-    private func presentMovieDetailsController() {
-        guard let movie = self.searchedMovie else { return }
-        delegate?.presentMovieDetailsController(withMovie: movie)
-    }
-    
+
     private func createFooter() -> UIView {
         let footer = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 100))
         let spinner = UIActivityIndicatorView()
@@ -115,13 +114,19 @@ class MoviesController: UITableViewController {
         return footer
     }
     
+    private func removeFooter() {
+        DispatchQueue.main.async {
+            self.tableView.tableFooterView = nil
+        }
+    }
+    
     private func fetchImages(forCell cell: UITableViewCell, _ posterUrl: String?) {
         guard let posterUrl = posterUrl else {return}
         fetchImageData(posterUrl, forCell: cell)
     }
     
     private func clearMoviesArray() {
-        if self.movies.count > 200 {
+        if self.movies.count > 300 {
             self.movies.removeAll()
         }
     }
@@ -132,18 +137,19 @@ class MoviesController: UITableViewController {
         let controller = SearchController()
         controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
+        }
     }
-}
 
 //MARK: - TableViewDataSource
 
 extension MoviesController {
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView,
+                            numberOfRowsInSection section: Int) -> Int {
         return movies.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView,
+                            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Consts.cellId, for: indexPath) as! MoviesCell
         let movie = movies[indexPath.row]
         cell.movie = movie
@@ -156,18 +162,18 @@ extension MoviesController {
 
 extension MoviesController {
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView,
+                            didSelectRowAt indexPath: IndexPath) {
         let movie = movies[indexPath.row]
         if isInSplitMode {
             guard let delegate = delegate else {return}
-            delegate.didTapAt(movie: movie)
+            delegate.presentMovieDetailsController(withMovie: movie)
         } else {
             let controller = MovieDetailsController()
             controller.movie = movie
             navigationController?.pushViewController(controller, animated: true)
         }
     }
-  
 }
 
 //MARK: - UIScrollViewDelegate
@@ -188,11 +194,13 @@ extension MoviesController {
 extension MoviesController: SearchControllerDelegate {
     func didTapCell(movie: Movie) {
         navigationController?.popViewController(animated: true)
-        self.searchedMovie = movie
         if !isInSplitMode {
             let controller = MovieDetailsController()
             controller.movie = movie
             navigationController?.pushViewController(controller, animated: true)
+        } else {
+            self.searchedMovie = movie
         }
     }
 }
+
